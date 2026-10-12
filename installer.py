@@ -7,7 +7,7 @@ module 1 (connexion MCP « Studio 3D » et modèle « Studio 3D » déjà instal
   2. le secret Kubernetes « studio-robot » (adresse et mot de passe du robot), puis le notificateur
      et ses règles réseau (studio/k8s-notifications.yaml) ;
   3. l'en-tête X-Utilisateur-Id: {{USER_ID}} ajouté à la connexion « Studio 3D » ;
-  4. la phrase « Si le studio annonce que l'utilisateur sera prévenu, dis-le-lui. » ajoutée aux
+  4. la phrase « Si le studio annonce que l'utilisateur sera prévenu, dis-lui qu'il recevra une notification dans Open WebUI. » ajoutée aux
      consignes du modèle « Studio 3D ».
 
 Usage :
@@ -29,7 +29,7 @@ import urllib.request
 ICI = pathlib.Path(__file__).resolve().parent
 ROBOT = {"nom": "Studio 3D", "email": "studio-3d@example.com"}
 ENTETE = {"X-Utilisateur-Id": "{{USER_ID}}"}
-PHRASE = "Si le studio annonce que l'utilisateur sera prévenu, dis-le-lui."
+PHRASE = "Si le studio annonce que l'utilisateur sera prévenu, dis-lui qu'il recevra une notification dans Open WebUI."
 
 
 def reglages() -> dict:

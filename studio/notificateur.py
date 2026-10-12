@@ -67,17 +67,17 @@ def conversation(utilisateur_id: str) -> str:
 
 
 def message(numero: int, d: dict) -> str:
-    """Texte du robot : le statut, l'image, puis, en dernier, les liens signés du studio (objet 3D, scène Blender)."""
+    """Texte du robot : le statut, l'image, puis la liste des liens signés du studio (objet 3D, scène Blender)."""
     if d["statut"] != "termine":
         return T["erreur"].format(numero=numero, titre=d["titre"])
-    liens = [f'[{T["objet"]}]({c.lien(numero, "glb")})']
+    liens = [f'- [{T["objet"]}]({c.lien(numero, "glb")})']
     if d.get("scene"):  # scène déposée dans le stockage S3 (série studio3d, module 6)
-        liens.append(f'[{c.LIBELLE_SCENE}]({c.lien(numero, "blend")})')
+        liens.append(f'- [{c.LIBELLE_SCENE}]({c.lien(numero, "blend")})')
     elif d.get("scene_prevue") == "1":
-        liens.append(T["sans_scene"])
+        liens.append(f'- {T["sans_scene"]}')
     return "\n\n".join([T["pret"].format(numero=numero, titre=d["titre"]),
                         f'![{d["titre"]}]({c.lien(numero, "png")})',
-                        T["suite"].format(numero=numero), " · ".join(liens)])
+                        T["suite"].format(numero=numero), "\n".join(liens)])
 
 
 def poster(utilisateur_id: str, texte: str) -> None:

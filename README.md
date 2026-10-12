@@ -23,7 +23,7 @@ Contenu, à l'état montré en fin de vidéo :
 | `studio/notificateur.py` | Le notificateur : connexion du robot (`jeton`), message direct créé une fois par utilisateur et gardé dans Redis (`conversation`), texte avec les liens signés du studio (`message`), boucle qui attend un numéro (`brpop`) et le remet dans Redis si Open WebUI ne répond pas (nouvel essai dix secondes plus tard) |
 | `studio/k8s-notifications.yaml` | Déploiement (une seule copie, image du studio, autre commande, compte du robot lu dans le secret `studio-robot`) et règles réseau : le notificateur, et lui seul, joint Open WebUI ; les workers restent limités à Redis |
 | `open-webui/connexion-studio.json` | La connexion MCP du module 1, avec le second en-tête `X-Utilisateur-Id: {{USER_ID}}` |
-| `open-webui/consignes-modele.txt` | Les consignes du module 1, plus une phrase : « Si le studio annonce que l'utilisateur sera prévenu, dis-le-lui. » |
+| `open-webui/consignes-modele.txt` | Les consignes du module 1, plus une phrase : « Si le studio annonce que l'utilisateur sera prévenu, dis-lui qu'il recevra une notification dans Open WebUI. » |
 | `installer.py` | Tout ce qui précède, par l'API d'Open WebUI et `kubectl` (`--retirer` pour revenir en arrière) |
 
 ## Pourquoi un composant à part ?
