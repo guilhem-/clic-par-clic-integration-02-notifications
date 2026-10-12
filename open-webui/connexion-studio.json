@@ -1,0 +1,23 @@
+{
+  "type": "mcp",
+  "url": "http://studio.studio3d.svc.cluster.local:8000/mcp",
+  "path": "",
+  "auth_type": "bearer",
+  "key": "${STUDIO_JETON}",
+  "headers": {
+    "X-Utilisateur-Email": "{{USER_EMAIL}}",
+    "X-Utilisateur-Id": "{{USER_ID}}"
+  },
+  "config": {
+    "enable": true,
+    "function_name_filter_list": "soumettre_rendu, etat_rendu, mes_rendus, lister_assets",
+    "access_grants": [
+      { "principal_type": "group", "principal_id": "${GROUPE_ID}", "permission": "read" }
+    ]
+  },
+  "info": {
+    "id": "studio",
+    "name": "Studio 3D",
+    "description": ""
+  }
+}

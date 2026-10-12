@@ -1,0 +1,70 @@
+# Notifications du studio (série Intégrations, module int02) : un notificateur lit « studio:notifications »
+# dans Redis et prévient l'utilisateur par un message direct du robot « Studio 3D » dans Open WebUI.
+# S'ajoute au studio à l'échelle (k8s-echelle.yaml), dans sa dernière version (image studio3d:5).
+#   deployerNotifications(robot) dans services/studio3d/deployer.mjs (secret « studio-robot », puis ce fichier)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studio-notificateur
+  namespace: studio3d
+spec:
+  replicas: 1                                 # un seul : chaque notification part une fois
+  selector:
+    matchLabels: { app: studio-notificateur }
+  template:
+    metadata:
+      labels: { app: studio-notificateur }    # pas « role: studio » : règle réseau à part
+    spec:
+      containers:
+        - name: notificateur
+          image: studio3d:5                   # la même image que le studio, une autre commande
+          imagePullPolicy: IfNotPresent
+          command: ["python", "notificateur.py"]
+          env:
+            - name: REDIS_HOTE
+              value: redis
+            - name: REDIS_MOT_DE_PASSE
+              valueFrom: { secretKeyRef: { name: studio, key: redis } }
+            - name: STUDIO_JETON                # signe les liens des rendus, comme le serveur MCP
+              valueFrom: { secretKeyRef: { name: studio, key: jeton } }
+            - name: STUDIO_PUBLIC_URL
+              value: http://studio.localhost:8080
+            - name: OWUI_URL                    # adresse interne d'Open WebUI
+              value: http://open-webui.terminals.svc.cluster.local:8080
+            - name: ROBOT_EMAIL                 # le compte robot : lu dans son propre secret
+              valueFrom: { secretKeyRef: { name: studio-robot, key: email } }
+            - name: ROBOT_MOT_DE_PASSE
+              valueFrom: { secretKeyRef: { name: studio-robot, key: mot_de_passe } }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+---
+# Le notificateur, et lui seul, peut joindre Open WebUI (en plus de Redis) ; les workers restent isolés.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: notificateur-vers-redis-et-open-webui
+  namespace: studio3d
+spec:
+  podSelector: { matchLabels: { app: studio-notificateur } }
+  policyTypes: [Egress]
+  egress:
+    - to: [{ podSelector: { matchLabels: { app: redis } } }]
+      ports: [{ port: 6379, protocol: TCP }]
+    - to: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: terminals } }, podSelector: { matchLabels: { app: open-webui } } }]
+      ports: [{ port: 8080, protocol: TCP }]
+    - to: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: kube-system } }, podSelector: { matchLabels: { k8s-app: kube-dns } } }]
+      ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]
+---
+# Redis accepte aussi le notificateur.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-notificateur
+  namespace: studio3d
+spec:
+  podSelector: { matchLabels: { app: redis } }
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{ podSelector: { matchLabels: { app: studio-notificateur } } }]
+      ports: [{ port: 6379, protocol: TCP }]
