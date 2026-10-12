@@ -121,7 +121,8 @@ nouvel essai dans 10 s » et le numéro reste dans Redis jusqu'à l'envoi.
 
 - Module précédent : **Brancher le studio 3D de l'organisation à Open WebUI** —
   [clic-par-clic-integration-01-brancher-studio](https://github.com/guilhem-/clic-par-clic-integration-01-brancher-studio).
-- Module suivant : **Un widget de suivi dans la conversation**.
+- Module suivant : **Un widget de suivi dans la conversation** —
+  [clic-par-clic-integration-03-widget-suivi](https://github.com/guilhem-/clic-par-clic-integration-03-widget-suivi).
 - Construire le studio : série « Créer un service d'IA compatible agentique : le studio 3D »
   (dépôts `clic-par-clic-studio3d-01` à `06`).
 
